@@ -1,4 +1,3 @@
-// src/UserInputForm.js
 import React, { useState } from 'react';
 import Select from 'react-select';
 import axios from 'axios'; // Axios to send data to the backend
@@ -34,22 +33,28 @@ const UserInputForm = () => {
     }));
   };
 
+  // Add async keyword to enable await usage
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Convert image to base64
-    const imageBase64 = await toBase64(formData.image);
-
-    const dataToSend = {
-      ...formData,
-      latitude: parseFloat(formData.latitude),
-      longitude: parseFloat(formData.longitude),
-      image: imageBase64,
-    };
+    e.preventDefault(); // Prevent page reload
 
     try {
-      const response = await axios.post('http://localhost:5000/submit', dataToSend);
-      console.log(response.data.message);
+      // Convert image to base64
+      const imageBase64 = await toBase64(formData.image);
+
+      // Prepare data to send
+      const dataToSend = {
+        ...formData,
+        latitude: parseFloat(formData.latitude), // Convert to number
+        longitude: parseFloat(formData.longitude), // Convert to number
+        image: imageBase64, // Send image as base64
+      };
+
+      const response = await axios.post(
+        'http://localhost:5000/submit',
+        dataToSend
+      );
+
+      console.log(response.data.message); // Log success message
       alert('Data submitted successfully!');
     } catch (error) {
       console.error('Error submitting data:', error);
@@ -143,7 +148,9 @@ const UserInputForm = () => {
         required
       />
 
-      <button type="submit" style={styles.button}>Submit</button>
+      <button type="submit" style={styles.button}>
+        Submit
+      </button>
     </form>
   );
 };
