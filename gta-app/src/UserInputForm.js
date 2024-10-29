@@ -1,8 +1,8 @@
 // src/UserInputForm.js
 import React, { useState } from 'react';
-import Select from 'react-select'; // React dropdown library
+import Select from 'react-select';
+import axios from 'axios'; // Axios to send data to the backend
 
-// Dynamically generate time options from 1 to 24 (military time)
 const timeOptions = Array.from({ length: 24 }, (_, i) => ({
   value: i + 1,
   label: `${i + 1}:00`,
@@ -13,7 +13,8 @@ const UserInputForm = () => {
     username: '',
     title: '',
     description: '',
-    coordinates: '',
+    latitude: '',
+    longitude: '',
     time: '',
     image: null,
   });
@@ -33,10 +34,36 @@ const UserInputForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    // Handle form submission logic here (e.g., send to backend or display on UI)
+
+    // Convert image to base64
+    const imageBase64 = await toBase64(formData.image);
+
+    const dataToSend = {
+      ...formData,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+      image: imageBase64,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:5000/submit', dataToSend);
+      console.log(response.data.message);
+      alert('Data submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting data:', error);
+      alert('Failed to submit data.');
+    }
+  };
+
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   return (
@@ -73,15 +100,28 @@ const UserInputForm = () => {
         required
       />
 
-      <label>Coordinates:</label>
+      <label>Latitude:</label>
       <input
-        type="text"
-        name="coordinates"
-        placeholder="Enter coordinates (e.g., 37.7749, -122.4194)"
-        value={formData.coordinates}
+        type="number"
+        name="latitude"
+        placeholder="Enter latitude (e.g., 37.7749)"
+        value={formData.latitude}
         onChange={handleChange}
         style={styles.input}
         required
+        step="any"
+      />
+
+      <label>Longitude:</label>
+      <input
+        type="number"
+        name="longitude"
+        placeholder="Enter longitude (e.g., -122.4194)"
+        value={formData.longitude}
+        onChange={handleChange}
+        style={styles.input}
+        required
+        step="any"
       />
 
       <label>Time (1–24 hours):</label>
