@@ -36,24 +36,28 @@ const UserInputForm = () => {
   // Add async keyword to enable await usage
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
-
+  
     try {
-      // Convert image to base64
-      const imageBase64 = await toBase64(formData.image);
-
+      let imageBase64 = null;
+      
+      // Convert image to base64 if an image file is provided
+      if (formData.image) {
+        imageBase64 = await toBase64(formData.image);
+      }
+  
       // Prepare data to send
       const dataToSend = {
         ...formData,
         latitude: parseFloat(formData.latitude), // Convert to number
         longitude: parseFloat(formData.longitude), // Convert to number
-        image: imageBase64, // Send image as base64
+        image: imageBase64, // Send image as base64 if available
       };
-
+  
       const response = await axios.post(
-        'http://localhost:5000/submit',
+        'http://localhost:3000/submit',
         dataToSend
       );
-
+  
       console.log(response.data.message); // Log success message
       alert('Data submitted successfully!');
     } catch (error) {
@@ -61,7 +65,7 @@ const UserInputForm = () => {
       alert('Failed to submit data.');
     }
   };
-
+  
   const toBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -145,7 +149,6 @@ const UserInputForm = () => {
         accept="image/*"
         onChange={handleChange}
         style={styles.input}
-        required
       />
 
       <button type="submit" style={styles.button}>

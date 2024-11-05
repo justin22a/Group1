@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,7 +5,7 @@ const bodyParser = require('body-parser');
 
 // Initialize Express app
 const app = express();
-const PORT = 5000;
+const PORT = 3000;
 
 // Middleware
 app.use(cors()); // Allow frontend to connect
@@ -23,28 +22,39 @@ mongoose.connect(uri, {
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// Define the Mongoose schema and model
-const userDataSchema = new mongoose.Schema({
+// Define the Mongoose schema and model for theft data
+const theftReportSchema = new mongoose.Schema({
   username: String,
   title: String,
   description: String,
   latitude: Number,
   longitude: Number,
   time: String,
-  image: String, // Store image as a base64 string
+  image: String, // Store image as a base64 string, could be optional
 });
 
-const UserData = mongoose.model('UserData', userDataSchema);
+const TheftReport = mongoose.model('TheftReport', theftReportSchema);
 
-// POST endpoint to save form data
+// POST endpoint to save a new theft report
 app.post('/submit', async (req, res) => {
   try {
-    const newData = new UserData(req.body); // Create a new document
-    await newData.save(); // Save to MongoDB
+    const newReport = new TheftReport(req.body); // Create a new document with the submitted data
+    await newReport.save(); // Save to MongoDB
     res.status(201).json({ message: 'Data saved successfully' });
   } catch (error) {
     console.error('Error saving data:', error);
     res.status(500).json({ message: 'Error saving data', error });
+  }
+});
+
+// GET endpoint to retrieve all theft reports for displaying on the map
+app.get('/theft-reports', async (req, res) => {
+  try {
+    const reports = await TheftReport.find(); // Retrieve all theft reports from MongoDB
+    res.json(reports); // Send back the data as JSON
+  } catch (error) {
+    console.error('Error retrieving theft reports:', error);
+    res.status(500).json({ message: 'Error retrieving theft reports', error });
   }
 });
 

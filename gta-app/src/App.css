@@ -66,3 +66,112 @@ button:hover {
   background-color: #0056b3;
 }
 
+/* src/App.css */
+
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+subheader {
+  background-color: #007bff;
+  color: white;
+  padding: 1rem;
+}
+
+header {
+  background-color: #000000;
+  color: white;
+  padding: 1rem;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.form-section, .map-section {
+  width: 80%;
+  margin-bottom: 2rem;
+}
+
+.form-section h2, .map-section h2 {
+  color: #333;
+}
+
+.map-section {
+  height: 500px;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Ensure the map takes the full height and width of the section */
+.map-section .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+
+/* src/App.css */
+
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+header {
+  background-color: #007bff;
+  color: white;
+  padding: 1rem;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.tabs button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #333;
+  margin: 0 5px;
+  transition: background-color 0.3s;
+}
+
+.tabs button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tabs button:hover:not(.active) {
+  background-color: #ddd;
+}
+
+.main {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.map-section, .form-section {
+  width: 80%;
+  max-width: 800px;
+  margin: auto;
+}
+
+.map-section {
+  height: 500px;
+}
+
+.map-section .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+
