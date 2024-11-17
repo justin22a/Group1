@@ -5,15 +5,14 @@ const bodyParser = require('body-parser');
 
 // Initialize Express app
 const app = express();
-const PORT = 3000;
+const PORT = 5000;
 
 // Middleware
 app.use(cors()); // Allow frontend to connect
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 // MongoDB Atlas Connection String
-const uri = 'mongodb+srv://hernandezc2:4JsKEnvMcPjwP6Yi@clustero.kpvtm.mongodb.net/userdata?retryWrites=true&w=majority&appName=Cluster';
-
+const uri = 'mongodb+srv://hernandezc2:4JsKEnvMcPjwP6Yi@cluster0.kpvtm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 // Connect to MongoDB Atlas
 mongoose.connect(uri, {
   useNewUrlParser: true,
@@ -58,6 +57,7 @@ app.get('/theft-reports', async (req, res) => {
   }
 });
 
+// why do it say cant get /get
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
