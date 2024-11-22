@@ -11,20 +11,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('map'); // State for active tab
   const [theftLocations, setTheftLocations] = useState([]);
 
-  useEffect(() => {
-    // Fetch theft reports from the backend when the component mounts
-    const fetchTheftReports = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/theft-reports');
-        const data = await response.json();
-        setTheftLocations(data);
-      } catch (error) {
-        console.error('Error fetching theft reports:', error);
-      }
-    };
 
-    fetchTheftReports();
-  }, []);
 
   // Handler to switch tabs
   const handleTabChange = (tab) => {

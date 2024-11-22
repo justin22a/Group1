@@ -5,14 +5,15 @@ const bodyParser = require('body-parser');
 
 // Initialize Express app
 const app = express();
-const PORT = 5000;
+const PORT = 3000;
 
 // Middleware
 app.use(cors()); // Allow frontend to connect
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 // MongoDB Atlas Connection String
-const uri = 'mongodb+srv://hernandezc2:4JsKEnvMcPjwP6Yi@cluster0.kpvtm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+const pw = ''
+const uri = ''
 // Connect to MongoDB Atlas
 mongoose.connect(uri, {
   useNewUrlParser: true,
@@ -29,13 +30,17 @@ const theftReportSchema = new mongoose.Schema({
   latitude: Number,
   longitude: Number,
   time: String,
-  image: String, // Store image as a base64 string, could be optional
+  image: {
+    type: String, // Store image as a base64 string, could be optional
+    required: false,
+  }
 });
 
 const TheftReport = mongoose.model('TheftReport', theftReportSchema);
 
 // POST endpoint to save a new theft report
 app.post('/submit', async (req, res) => {
+  
   try {
     const newReport = new TheftReport(req.body); // Create a new document with the submitted data
     await newReport.save(); // Save to MongoDB
@@ -48,9 +53,11 @@ app.post('/submit', async (req, res) => {
 
 // GET endpoint to retrieve all theft reports for displaying on the map
 app.get('/theft-reports', async (req, res) => {
+  
   try {
     const reports = await TheftReport.find(); // Retrieve all theft reports from MongoDB
     res.json(reports); // Send back the data as JSON
+    console.log(reports)
   } catch (error) {
     console.error('Error retrieving theft reports:', error);
     res.status(500).json({ message: 'Error retrieving theft reports', error });

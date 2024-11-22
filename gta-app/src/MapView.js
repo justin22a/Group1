@@ -1,8 +1,9 @@
 // src/MapView.js
-import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
+import React, { useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
+
 
 // Define a custom icon for the markers
 const customIcon = new L.Icon({
@@ -15,11 +16,40 @@ const customIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const sampleLocations = [
+ var sampleLocations = [
     { username: "User1", latitude: 29.652, longitude: -82.325, description: "Stolen bike" },
     { username: "User2", latitude: 29.653, longitude: -82.323, description: "Stolen scooter" },
     { username: "User3", latitude: 29.654, longitude: -82.326, description: "Stolen laptop" },
   ];
+  
+  const seeTheftReports = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/theft-reports');
+      const rawData = await response.json();
+  
+      // Transform the data to match sampleLocations format
+      const formattedData = rawData.map(report => ({
+        username: report.username || "Unknown", // Fallback for missing username
+        latitude: report.latitude,
+        longitude: report.longitude,
+        description: report.description || "No description provided"
+      }));
+  
+      sampleLocations = [...sampleLocations, ...formattedData]; 
+      console.log("Combined locations:", formattedData);
+      return formattedData
+    } catch (error) {
+      console.error('Error fetching theft reports:', error);
+    }
+  };
+
+
+  seeTheftReports(); 
+
+  
+
+
+  
 
 const MapView = ({ theftLocations = [] }) => {
   const defaultPosition = [29.6516, -82.3248]; // Center on Gainesville, FL
