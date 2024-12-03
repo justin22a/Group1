@@ -1,4 +1,3 @@
-// src/MapView.js
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import React, { useState, useEffect } from 'react';
@@ -26,6 +25,7 @@ const fetchTheftReports = async () => {
       latitude: report.latitude,
       longitude: report.longitude,
       description: report.description || "No description provided",
+      image: report.image || null, // Include image field
     }));
   } catch (error) {
     console.error('Error fetching theft reports:', error);
@@ -60,6 +60,13 @@ const MapView = () => {
           <Popup>
             <strong>{location.username}</strong>
             <p>{location.description}</p>
+            {location.image && (
+              <img
+                src={location.image}
+                alt="Theft report"
+                style={{ width: '200px', height: 'auto', marginTop: '10px' }}
+              />
+            )}
           </Popup>
         </Marker>
       ))}
