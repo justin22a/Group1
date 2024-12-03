@@ -1,9 +1,8 @@
 // src/MapView.js
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
-
 
 // Define a custom icon for the markers
 const customIcon = new L.Icon({
@@ -16,43 +15,35 @@ const customIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
- var sampleLocations = [
-    { username: "User1", latitude: 29.652, longitude: -82.325, description: "Stolen bike" },
-    { username: "User2", latitude: 29.653, longitude: -82.323, description: "Stolen scooter" },
-    { username: "User3", latitude: 29.654, longitude: -82.326, description: "Stolen laptop" },
-  ];
-  
-  const seeTheftReports = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/theft-reports');
-      const rawData = await response.json();
-  
-      // Transform the data to match sampleLocations format
-      const formattedData = rawData.map(report => ({
-        username: report.username || "Unknown", // Fallback for missing username
-        latitude: report.latitude,
-        longitude: report.longitude,
-        description: report.description || "No description provided"
-      }));
-  
-      sampleLocations = [...sampleLocations, ...formattedData]; 
-      console.log("Combined locations:", formattedData);
-      return formattedData
-    } catch (error) {
-      console.error('Error fetching theft reports:', error);
-    }
-  };
+const fetchTheftReports = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/theft-reports');
+    const rawData = await response.json();
 
+    // Transform the data to match expected format
+    return rawData.map(report => ({
+      username: report.username || "Unknown", // Fallback for missing username
+      latitude: report.latitude,
+      longitude: report.longitude,
+      description: report.description || "No description provided",
+    }));
+  } catch (error) {
+    console.error('Error fetching theft reports:', error);
+    return []; // Return an empty array on failure
+  }
+};
 
-  seeTheftReports(); 
-
-  
-
-
-  
-
-const MapView = ({ theftLocations = [] }) => {
+const MapView = () => {
   const defaultPosition = [29.6516, -82.3248]; // Center on Gainesville, FL
+  const [theftLocations, setTheftLocations] = useState([]);
+
+  useEffect(() => {
+    const loadTheftReports = async () => {
+      const data = await fetchTheftReports();
+      setTheftLocations(data);
+    };
+    loadTheftReports();
+  }, []);
 
   return (
     <MapContainer center={defaultPosition} zoom={13} style={{ height: "100%", width: "100%" }}>
@@ -60,11 +51,11 @@ const MapView = ({ theftLocations = [] }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
       />
-      {sampleLocations.map((location, index) => (
+      {theftLocations.map((location, index) => (
         <Marker
           key={index}
           position={[location.latitude, location.longitude]}
-          icon={customIcon} // Use the custom icon here
+          icon={customIcon}
         >
           <Popup>
             <strong>{location.username}</strong>
