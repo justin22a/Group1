@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react'; // Import Auth0 hook
 import UserInputForm from './UserInputForm';
 import MapView from './MapView';
 import LoginButton from './loginButton'; // Authentication components
 import LogoutButton from './logoutButton';
-import './App.css'; // Optional: Style the app
+import './App.css'; // Style the app
 
 function App() {
   const { isAuthenticated } = useAuth0(); // Check authentication status
   const [activeTab, setActiveTab] = useState('map'); // State for active tab
   const [theftLocations, setTheftLocations] = useState([]);
-
-
 
   // Handler to switch tabs
   const handleTabChange = (tab) => {
@@ -20,12 +18,12 @@ function App() {
 
   return (
     <div className="App">
-      <header>
-        <h1>Gainesville Theft Application</h1>
+      <header className="app-header">
+        <h1>Gainesville Theft Tracker</h1>
         <div className="auth-buttons">
           {!isAuthenticated ? <LoginButton /> : <LogoutButton />}
         </div>
-        <div className="tabs">
+        <nav className="tabs">
           <button
             className={activeTab === 'map' ? 'active' : ''}
             onClick={() => handleTabChange('map')}
@@ -38,11 +36,11 @@ function App() {
           >
             Report Theft
           </button>
-        </div>
+        </nav>
       </header>
-      <main>
+      <main className="content">
         {!isAuthenticated ? (
-          <p>Please log in to view content.</p>
+          <p className="auth-message">Please log in to access the application.</p>
         ) : (
           <>
             {activeTab === 'map' && (
@@ -58,6 +56,9 @@ function App() {
           </>
         )}
       </main>
+      <footer className="app-footer">
+        <p>&copy; {new Date().getFullYear()} Gainesville Theft Tracker. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

@@ -7,11 +7,14 @@ const timeOptions = Array.from({ length: 24 }, (_, i) => ({
   label: `${i + 1}:00`,
 }));
 
+const API_KEY = 'ab06ae4881d044f28cef4879aca8c550'; // OpenCage API Key
+
 const UserInputForm = () => {
   const [formData, setFormData] = useState({
     username: '',
     title: '',
     description: '',
+    address: '',
     latitude: '',
     longitude: '',
     time: '',
@@ -33,18 +36,41 @@ const UserInputForm = () => {
     }));
   };
 
-  // Add async keyword to enable await usage
+  const fetchCoordinates = async () => {
+    if (!formData.address) return alert('Please enter an address.');
+    try {
+      const response = await axios.get(
+        `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+          formData.address
+        )}&key=${API_KEY}`
+      );
+      const location = response.data.results[0]?.geometry;
+      if (location) {
+        setFormData((prevData) => ({
+          ...prevData,
+          latitude: location.lat,
+          longitude: location.lng,
+        }));
+      } else {
+        alert('Coordinates not found for the provided address.');
+      }
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
+      alert('Failed to fetch coordinates. Please try again.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
-  
+
     try {
       let imageBase64 = null;
-      
+
       // Convert image to base64 if an image file is provided
       if (formData.image) {
         imageBase64 = await toBase64(formData.image);
       }
-  
+
       // Prepare data to send
       const dataToSend = {
         ...formData,
@@ -52,12 +78,12 @@ const UserInputForm = () => {
         longitude: parseFloat(formData.longitude), // Convert to number
         image: imageBase64, // Send image as base64 if available
       };
-  
+
       const response = await axios.post(
         'http://localhost:3000/submit',
         dataToSend
       );
-  
+
       console.log(response.data.message); // Log success message
       alert('Data submitted successfully!');
     } catch (error) {
@@ -65,7 +91,7 @@ const UserInputForm = () => {
       alert('Failed to submit data.');
     }
   };
-  
+
   const toBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -108,6 +134,19 @@ const UserInputForm = () => {
         style={styles.textarea}
         required
       />
+
+      <label>Address:</label>
+      <input
+        type="text"
+        name="address"
+        placeholder="Enter address"
+        value={formData.address}
+        onChange={handleChange}
+        style={styles.input}
+      />
+      <button type="button" onClick={fetchCoordinates} style={styles.button}>
+        Fetch Coordinates
+      </button>
 
       <label>Latitude:</label>
       <input
@@ -185,6 +224,7 @@ const styles = {
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
+    marginBottom: '10px',
   },
 };
 

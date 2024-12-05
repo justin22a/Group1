@@ -60,6 +60,9 @@ const MapView = () => {
           <Popup>
             <strong>{location.username}</strong>
             <p>{location.description}</p>
+            <p>
+                <strong>Time:</strong> {location.time}
+            </p>
             {location.image && (
               <img
                 src={location.image}
